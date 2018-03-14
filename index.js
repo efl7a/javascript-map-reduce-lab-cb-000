@@ -9000,16 +9000,20 @@ const issues = [
     "url": "https://api.github.com/repos/learn-co-curriculum/js-donut-lab/issues/2"
   }
 ];
-function fixApi (result, currentObj) {
-  obj = currentObj
-  obj["url"] = currentObj["url"].replace("api", "api-v2")
-  result.push(obj)
-  return result
-};
+function fixApi (currentObj) {
+  var newUrl = currentObj["url"].replace("api", "api-v2")
+  return Object.assign({}, currentObj, {
+    "url": newUrl
+  })
+}
+
+var issuesWithUpdatedApiUrl = issues.map(fixApi);
 
 function countComments (total, currentObj) {
   return total + currentObj["comments_count"]
 };
+
+var commentCountAcrossIssues = issues.reduce(countComments, 0);
 
 function issuesStillOpen (result, currentObj) {
   if (currentObj["state"] == "open"){
@@ -9017,6 +9021,8 @@ function issuesStillOpen (result, currentObj) {
   }
   return result
 };
+
+ var openIssues = issues.reduce(issuesStillOpen, []);
 
 function noAutomatedIssues (result, currentObj){
   if (currentObj["body"].includes("automatically")) {
@@ -9027,8 +9033,10 @@ function noAutomatedIssues (result, currentObj){
   }
 };
 
+var nonAutomaticIssues = issues.reduce(noAutomatedIssues, []);
+
 function makeRow(currentObj) {
-  var table = document.getElementsByTagName("table")
+  var table = document.getElementById("results")
 
   var row = table.insertRow(-1)
 
@@ -9040,13 +9048,5 @@ function makeRow(currentObj) {
   cell2.innerHTML = currentObj["created_at"]
   cell3.innerHTML = currentObj["state"]
 };
-
-var issuesWithUpdatedApiUrl = issues.reduce(fixApi, []);
-
-var commentCountAcrossIssues = issues.reduce(countComments, 0);
-
-var openIssues = issues.reduce(issuesStillOpen, []);
-
-var nonAutomaticIssues = issues.reduce(noAutomatedIssues, []);
 
 nonAutomaticIssues.forEach(makeRow);
