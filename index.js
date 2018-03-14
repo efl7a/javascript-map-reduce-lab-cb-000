@@ -9000,3 +9000,53 @@ const issues = [
     "url": "https://api.github.com/repos/learn-co-curriculum/js-donut-lab/issues/2"
   }
 ];
+function fixApi (result, currentObj) {
+  obj = currentObj
+  obj["url"] = currentObj["url"].replace("api", "api-v2")
+  result.push(obj)
+  return result
+};
+
+function countComments (total, currentObj) {
+  return total + currentObj["comments_count"]
+};
+
+function issuesStillOpen (result, currentObj) {
+  if (currentObj["state"] == "open"){
+    result.push(currentObj)
+  }
+  return result
+};
+
+function noAutomatedIssues (result, currentObj){
+  if (currentObj["body"].includes("automatically")) {
+    return result
+  } else {
+    result.push(currentObj)
+    return result
+  }
+};
+
+function makeRow(currentObj) {
+  var table = document.getElementsByTagName("table")
+
+  var row = table.insertRow(-1)
+
+  var cell1 = row.insertCell(0)
+  var cell2 = row.insertCell(1)
+  var cell3 = row.insertCell(2)
+
+  cell1.innerHTML = currentObj["body"]
+  cell2.innerHTML = currentObj["created_at"]
+  cell3.innerHTML = currentObj["state"]
+};
+
+var issuesWithUpdatedApiUrl = issues.reduce(fixApi, []);
+
+var commentCountAcrossIssues = issues.reduce(countComments, 0);
+
+var openIssues = issues.reduce(issuesStillOpen, []);
+
+var nonAutomaticIssues = issues.reduce(noAutomatedIssues, []);
+
+nonAutomaticIssues.forEach(makeRow);
